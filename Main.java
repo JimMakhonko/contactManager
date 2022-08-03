@@ -1,7 +1,6 @@
 import models.Contact;
 import models.ContactManager;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
@@ -9,7 +8,6 @@ import java.util.Scanner;
 
 public class Main {
     static ContactManager contactManager = new ContactManager();
-
     public static void main(String[] args) {
         try {
             loadContacts("contacts.txt");
@@ -34,38 +32,41 @@ public class Main {
      * • 3. close Scanner.
      */
     public static void manageContacts() {
+
         Scanner scan = new Scanner(System.in);
         while (true) {
             System.out.println("Would you like to \n\ta) add a contact\n\tb) remove a contact\n\tc) to exit.");
             String response = scan.nextLine();
             if (response.equals("a")) {
-                System.out.println("\tName: ");
+                System.out.print("\tName: ");
                 String name = scan.nextLine();
-
-                System.out.println("\tPhone number: ");
+                System.out.print("\tPhone number: ");
                 String phoneNumber = scan.nextLine();
-
-                System.out.println("\tBirth date: ");
+                System.out.print("\tBirth date: ");
                 String birthDate = scan.nextLine();
-                try {
-                    Contact contact = new Contact(name, phoneNumber, birthDate);
-                    contactManager.addContact(contact);
-                    System.out.println(contactManager);
-                } catch (ParseException e) {
-                    System.out.println(e.getMessage());
+                if (name.isBlank() || phoneNumber.isBlank() || phoneNumber.length() < 5|| birthDate.isBlank()) {
+                    System.out.println("\nThe input you provided is not valid. Registration failed.");
+                } else {
+                    try {
+                        contactManager.addContact(new Contact(name,phoneNumber,birthDate));
+                    } catch (ParseException e) {
+                        System.out.println(e.getMessage());
+                    } finally {
+                        System.out.println("\n\nUPDATED CONTACTS\n\n" + contactManager);
+                    }
                 }
-            }
-            if (response.equals("b")) {
+            } else if (response.equals("b")) {
                 System.out.print("What contact do you want to remove: ");
                 String nameToRemove = scan.nextLine();
                 contactManager.removeContact(nameToRemove);
-                System.out.println( nameToRemove + " successfully removed");
+                System.out.println(nameToRemove + " successfully removed");
                 System.out.println(contactManager);
             }
-            if(response.equals("c")){
+            if (response.equals("c")) {
                 break;
             }
         }
+        scan.close();
     }
 
     public static void loadContacts(String filename) throws FileNotFoundException {
